@@ -62,41 +62,56 @@ router.post('/report_out', async function(req, res) {
 router.post('/report_exposure', async function(req, res) {
     try {
         
-        console.log('exposed');
-
         const {exposed, user_id, date} = req.body;
        
+        // report positive diagnosis
         const sqlQuery = 'UPDATE user_logs SET exposed=? WHERE user_id=? AND date=?';
         const result = await pool.query(sqlQuery, [exposed, user_id, date]);
 
-        //res.status(200).json(result);
-        
-        // need to query concurrent times of this specific user+date+time
-        // with other user-times in the same date
-        secondQuery(date, user_id);
+        // find user ids of people to whom we need to send a notification
+        let exposed_ids = await getUserIdsToNotify(date, user_id); 
 
-        res.status(200).json({userId: result.insertId}); // insertId ?
+        
+        let emails = getEmailsToNotify(exposed_ids);
+
+        console.log(emails);
+        let query = 'SELECT email FROM user WHERE id IN (';
+        for(let i = 0; i < exposed_ids.length; i++) {
+            console.log(exposed_ids[i].user_id);
+            query+= exposed_ids[i].user_id;
+            if(i < exposed_ids.length - 1) {
+                query+= ',';
+            }
+        }
+        query+=')';
+        console.log(query);
+        const result3 = await pool.query(query);
+
+        console.log(result3);
+      
+        res.status(200).json({userEmail: result3}); // insertId ?
+
     } catch (error) {
         res.status(400).send(error.message);
     }
 })
 
-const secondQuery = async (date, user_id) => {
+const getUserIdsToNotify = async (date, user_id) => {
 
-    // in here we will calculate the time of this exposed user on this date
-    // with other users times on this date
-    console.log('secondQuery');
-    console.log(date);
-    console.log(user_id);
     // 1. get the exposed user times
     const sqlQuery = 'SELECT in_time, out_time FROM user_logs WHERE user_id=? AND date=?';
     const result = await pool.query(sqlQuery, [user_id, date]);
-    console.log(result.in_time);
-    //return res.status(200).json({userId: result.insertId});
+    
     // 2. check by these times for other users and get their emails
-
+    const sql2ndQuery = 'SELECT distinct(user_id) FROM user_logs WHERE (in_time<=? and out_time>?) AND date - 7 >= 0';
+    const result2 = await pool.query(sql2ndQuery,[result[0].out_time, result[0].in_time]);
+    
+    return result2;    
 }
 
+const getEmailsToNotify = async (exposed_ids) => {
+    
+}
 ////////////////////////////////////////////////////
 ////////////////////////////////////////////////////
 ////////////////////////////////////////////////////
@@ -109,6 +124,7 @@ router.post('/register', async function(req, res) {
         const sqlQuery = 'INSERT INTO user (email, password) VALUES (?,?)';
         const result = await pool.query(sqlQuery, [email, encryptedPassword]);
 
+        //return result;
         //res.status(200).json(result);
         res.status(200).json({userId: result.insertId});
     } catch (error) {
