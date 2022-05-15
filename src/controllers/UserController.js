@@ -26,18 +26,18 @@ exports.getAllUserRecordsById = async function(req,res){
 exports.login = async function(req,res) {
     try {
         const {id, password} = req.body;
-
+        console.log(id);
+        console.log(password);
         const sqlGetUser = 'SELECT password FROM user WHERE id=?';
         const rows = await pool.query(sqlGetUser, id);
 
         if (rows) {
-            
             const isValid = await bcrypt.compare(password, rows[0].password)
             res.status(200);
         }
         res.status(200).send(`User with id ${id} was not found`)
     } catch (error) {
-        res.status(400).send(error.message);
+        res.status(400).send('login error - no such user.');
     }
 }
 
@@ -45,13 +45,17 @@ exports.register = async function(req, res) {
     try {
         const {email, password} = req.body;
 
-        const encryptedPassword = await bcrypt.hash(password, 10)
-        const sqlQuery = 'INSERT INTO user (email, password) VALUES (?,?)';
-        const result = await pool.query(sqlQuery, [email, encryptedPassword]);
+        let sqlQuery = 'SELECT * FROM user WHERE email=?';
+        let result = await pool.query(sqlQuery, email);
+        const encryptedPassword = await bcrypt.hash(password, 10);
 
-        //return result;
-        //res.status(200).json(result);
-        res.status(200).json({userId: result.insertId});
+        if(result[0]) {
+            res.status(400).send('user already exists');    
+        } else {
+            sqlQuery = 'INSERT INTO user (email, password) VALUES (?,?)';
+            result = await pool.query(sqlQuery, [email, encryptedPassword]);
+            res.status(200).json(result.insertId.toString());
+        }
     } catch (error) {
         res.status(400).send(error.message);
     }

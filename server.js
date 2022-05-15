@@ -18,7 +18,6 @@ app.use("/doc", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 Routes
 */
 app.get('/', (request, response) => {
-    //response.status(200).json({name:'Zeev', doing:'Coding'})
     response.status(200).send("This is not why you're here. Head to /user/:id and replace id with your user id")
 })
 

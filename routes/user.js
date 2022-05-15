@@ -1,5 +1,4 @@
 const express = require('express');
-const pool = require('../helpers/database');
 const router = express.Router();
 
 const UserController = require('../src/controllers/UserController');
