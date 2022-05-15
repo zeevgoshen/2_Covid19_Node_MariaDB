@@ -12,25 +12,7 @@ exports.reportPoisitiveExposure = async function(req, res) {
         // find user ids of people to whom we need to send a notification
         let exposed_ids = await getUserIdsToNotify(date, user_id); 
 
-        
-        let emails = getEmailsToNotify(exposed_ids);
-
-        console.log(emails);
-        let query = 'SELECT email FROM user WHERE id IN (';
-        for(let i = 0; i < exposed_ids.length; i++) {
-            console.log(exposed_ids[i].user_id);
-            query+= exposed_ids[i].user_id;
-            if(i < exposed_ids.length - 1) {
-                query+= ',';
-            }
-        }
-        query+=')';
-        console.log(query);
-        const result3 = await pool.query(query);
-
-        console.log(result3);
-      
-        res.status(200).json({userEmail: result3}); // insertId ?
+        getEmailsToNotify(exposed_ids, res);        
 
     } catch (error) {
         res.status(400).send(error.message);
@@ -50,6 +32,24 @@ const getUserIdsToNotify = async (date, user_id) => {
     return result2;    
 }
 
-const getEmailsToNotify = async (exposed_ids) => {
+const getEmailsToNotify = async (exposed_ids, res) => {
+    let query = 'SELECT email FROM user WHERE id IN (';
+    for(let i = 0; i < exposed_ids.length; i++) {
+        console.log(exposed_ids[i].user_id);
+        query+= exposed_ids[i].user_id;
+        if(i < exposed_ids.length - 1) {
+            query+= ',';
+        }
+    }
+    query+=')';
     
+    const resultEmails = await pool.query(query);
+
+    let email_list = [];
+
+    for (let i = 0; i<resultEmails.length;i++) {
+        email_list.push(resultEmails[i].email);
+    }
+    console.log(email_list);
+    res.status(200).json({notifyEmails: email_list});
 }
