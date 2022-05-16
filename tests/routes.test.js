@@ -16,3 +16,22 @@ describe("GET /user/1 ", () => {
     expect(response.statusCode).toBe(200);
   });
 });
+
+
+describe("POST /report_in ", () => {
+  test("It should respond with a user", async () => {
+    const response = await request(app)
+    .post("/report_in")
+    .send({
+      in_time:"10:34",
+      user_id:"7",
+      date:"2021-12-28"
+    });
+    expect(response.body).toEqual([
+      {
+        affectedRows: 1
+      }
+    ]);
+    expect(response.statusCode).toBe(200);
+  });
+});

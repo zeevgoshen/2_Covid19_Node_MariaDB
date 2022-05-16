@@ -9,7 +9,7 @@ exports.reportTimeInByDate = async function(req, res) {
         const result = await pool.query(sqlQuery, [in_time, user_id, date]);
 
         //res.status(200).json(result);
-        res.status(200).json({userId: result.insertId});  // insertId ?
+        res.status(200).json({affectedRows: result.affectedRows});  // insertId ?
     } catch (error) {
         res.status(400).send(error.message);
     }
