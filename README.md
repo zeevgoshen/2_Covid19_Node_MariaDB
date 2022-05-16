@@ -8,4 +8,4 @@ Todo:
 
 
 File: Cynet_hometest.postman_collection.json 
-are the Postman requests i used
+is the Postman requests collection I used.
