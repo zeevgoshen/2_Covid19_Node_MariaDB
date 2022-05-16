@@ -9,3 +9,15 @@ Todo:
 
 File: Cynet_hometest.postman_collection.json 
 is the Postman requests collection I used.
+
+
+Run with:
+---------
+npm run dev
+(after npm install)
+
+
+Update docs:
+------------
+npm run swagger-autogen
+view - (http://localhost:5000/doc)
