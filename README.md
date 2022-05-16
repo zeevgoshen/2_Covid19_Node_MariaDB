@@ -1,4 +1,4 @@
-# HomeTest
+# HomeTest - Time reporting and Corona positive diagnosis + getting co-worker emails to be notified.
 
 Todo:
 
