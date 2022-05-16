@@ -5,7 +5,8 @@ Todo:
 1. More API tests with Jest.
 2. Add Validators.
 3. Add more details and descriptions in the Swagger UI.
-4. Add an export of MariaDB 
+4. Add an export of MariaDB
+5. Extract strings such as sql queries to a separate string resource file.
 
 File: Cynet_hometest.postman_collection.json 
 is the Postman requests collection I used.
