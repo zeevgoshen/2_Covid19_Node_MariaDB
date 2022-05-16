@@ -21,3 +21,7 @@ Update docs:
 ------------
 npm run swagger-autogen
 view - (http://localhost:5000/doc)
+
+Run tests:
+----------
+npm test
