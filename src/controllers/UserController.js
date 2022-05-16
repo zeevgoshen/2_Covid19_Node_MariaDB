@@ -26,8 +26,7 @@ exports.getAllUserRecordsById = async function(req,res){
 exports.login = async function(req,res) {
     try {
         const {id, password} = req.body;
-        console.log(id);
-        console.log(password);
+      
         const sqlGetUser = 'SELECT password FROM user WHERE id=?';
         const rows = await pool.query(sqlGetUser, id);
 
